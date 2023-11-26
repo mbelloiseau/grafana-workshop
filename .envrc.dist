@@ -1,0 +1,9 @@
+# Grafana
+export GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
+export GF_AUTH_ANONYMOUS_ENABLED="true"
+export GF_SECURITY_ADMIN_PASSWORD="strongPassword"
+export LOCAL_GF_PORT=3000
+# PostgreSQL
+export POSTGRES_PASSWORD="strongPassword"
+export POSTGRES_USER="user"
+export POSTGRES_DB="db_name"
