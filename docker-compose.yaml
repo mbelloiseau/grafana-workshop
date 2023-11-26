@@ -18,6 +18,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED
       - GF_SECURITY_ADMIN_PASSWORD
     volumes:
-      - ./grafana/provisioning/datasources/ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
     ports:
       - "127.0.0.1:${LOCAL_GF_PORT:-3000}:3000"
