@@ -1,0 +1,4 @@
+- targets:
+  - apt.grafana.com
+  - debian.org
+  - www.postgresql.org
