@@ -1,14 +1,44 @@
 version: "3.8"
 
+volumes:
+  prometheus_data:
+
 services:
   loki:
     image: grafana/loki:2.9.0
     hostname: loki
+    restart: always
     command: -config.file=/etc/loki/local-config.yaml
 
   promtail:
     hostname: promtail
     build: ./promtail
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    hostname: prometheus
+    restart: always
+    user: nobody
+    volumes:
+    - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+    - ./config/prometheus/targets.yaml:/etc/prometheus/targets.yaml:ro
+    - prometheus_data:/prometheus
+    command:
+    - --config.file=/etc/prometheus/prometheus.yaml
+    - --storage.tsdb.path=/prometheus
+    - --storage.tsdb.retention.time=2d
+    - --web.console.libraries=/usr/share/prometheus/console_libraries
+    - --web.console.templates=/usr/share/prometheus/consoles'
+    - --web.enable-admin-api
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.24.0
+    hostname: blackbox
+    restart: always
+    volumes:
+    - ./config/blackbox-exporter/blackbox-exporter.yaml:/etc/prometheus/blackbox-exporter.yaml
+    command:
+    - --config.file=/etc/prometheus/blackbox-exporter.yaml
 
   grafana:
     image: grafana/grafana:9.0.0
@@ -18,7 +48,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED
       - GF_SECURITY_ADMIN_PASSWORD
     volumes:
-      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
-      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
     ports:
       - "127.0.0.1:${LOCAL_GF_PORT:-3000}:3000"
